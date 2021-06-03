@@ -1,0 +1,151 @@
+<%- include("partials/header"); %>
+
+<% const fullName = `${loggedUser.firstName} ${loggedUser.lastName}` %>
+
+<div class="navbar">
+    <!-- Header -->
+
+    <a href="/newsfeed" class="logo">Testbook</a>
+
+    <!-- Profile Name -->
+
+    <h2 class="profileName"><%= foundUser.firstName + " " + foundUser.lastName %>'s Profile</h2>
+
+    <!-- Profile Dropdown -->
+    <div class="profileDropdown">
+        <span><%= fullName %></span>&nbsp;
+        <i class="fas fa-caret-down"></i>
+
+        <div class="profileDropdownMenu">
+            <a href="/profile/<%= loggedUser.id %>">Profile</a><br>
+            <a href="/logout" class="logout">Logout</a>
+        </div>
+    </div>
+
+</div>
+
+
+
+<!-- Upload Post -->
+<% const speratedFullName = fullName.split(" ") %>
+
+<div class="showOverlay">
+    <button class="showOverlay">What's on your mind, <%= speratedFullName[0] %>?</button>
+</div>
+
+<div class="upload">
+
+    <div class="overlay"></div>
+
+    <div class="uploadPost">
+        <label>Create Post</label>
+        <i class="fas fa-times"></i>
+        <hr>
+        <form action="/profileUploadPost" method="post" enctype="multipart/form-data">
+            <textarea class="postContent" type="text" name="content"
+                placeholder="What's on your mind, <%= speratedFullName[0] %>?"></textarea>
+            <div class="image-upload">
+                <label class="addToYourPost">Add to your post</label>
+                <label for="image">
+                    <i class="far fa-image"></i>
+                </label>
+
+                <input type="file" name="image" id="image" accept="image/*" value="">
+            </div>
+            <button type="submit" class="submit">Post</button>
+        </form>
+    </div>
+
+</div>
+
+<!-- Post -->
+<% foundUser.post.reverse().forEach( function(post) { %>
+
+<!-- Put these delete & edit comfirmation box outside the post because post's position is set to relative -->
+<!-- Delete confirmation box -->
+
+<div class="deletePostBox">
+    <div class="overlay"></div>
+    <div class="deletePostOverlay">
+        <label>Are you sure?</label>
+        <p>This post cannot be recovered once it is deleted.</p>
+        <button class="btn btn-secondary deletePost">Delete</button>
+        <button class="btn btn-secondary cancelDelete">Cancel</button>
+        <input type="hidden" class="postIdInPostEditor" value="<%= post._id %>">
+        <input type="hidden" class="postedUserId" value="<%= post.user %>">
+        <input type="hidden" class="loggedUserId" value="<%= loggedUser._id %>">
+        <% if(typeof post.img != "undefined") { %>
+        <input type="hidden" class="imageValue" value="data:image/<%=post.img.contentType%>;base64,<%=post.img.data%>>">
+        <% } %>
+    </div>
+</div>
+
+<!-- Edit confirmation box -->
+
+<div class="editPostBox">
+    <div class="overlay"></div>
+    <div class="editPostOverlay">
+        <p>Edit Post</p>
+        <textarea class="postContent editContent"><%= post.content %></textarea>
+        <button type="submit" class="btn btn-primary saveEdit">Save</button>
+        <button class="btn btn-secondary cancelEdit">Cancel</button>
+    </div>
+</div>
+
+<div class="post">
+
+    <!-- Edit & Delete Dropdown -->
+    <!-- Edit & Delete confirmation box are placed above because post's position is set to relative -->
+    <i class="fas fa-ellipsis-h"></i>
+    <div class="postDropdown">
+        <a id="editPost">Edit</a><br>
+        <a id="deletePost">Delete</a>
+    </div>
+
+    <!-- Post contents -->
+
+    <a href="/profile/<%= post.user %>" class="username"><%= post.name %></a>
+    <p class="date"><%= post.date %></p>
+    <p class="content"><%= post.content %></p>
+    <% if(typeof post.img != "undefined") { %>
+    <div class="mediaFiles">
+        <img src="data:image/<%=post.img.contentType%>;base64,
+            <%=post.img.data%>" class="image" onerror="this.style.display='none'">
+    </div>
+    <% } %>
+    <hr>
+    <!-- Comment -->
+
+    <div class="comment">
+        <p>Comments:</p>
+
+        <%   if (typeof post.comment != 'undefined' && post.comment != null) { %>
+
+        <% post.comment.forEach( comment => { %>
+
+        <div class="comments">
+            <a href="/profile/<%= comment.commenter %>" class="commentOwner"><%= comment.name %></a><br>
+            <p class="commentContent"><%= comment.content %></p>
+        </div>
+        <% }) %>
+        <% } %>
+
+    </div>
+
+
+    <div class="commentForm">
+        <input type="hidden" class="commenter" value="<%= fullName %>">
+        <input type="hidden" class="commenterId" value="<%= loggedUser._id %>">
+        <input type="hidden" class="postId" value="<%= post._id %>">
+        <input type="hidden" class="postOwner" value="<%= post.user %>">
+        <input type="hidden" class="postOwnerName" value="<%= post.name %>">
+
+        <textarea class="addComment" placeholder="Add a comment"></textarea>
+        <button type="submit" id="send"><i class="fas fa-chevron-circle-up fa-2x"></i></button>
+    </div>
+
+</div>
+
+<% }); %>
+
+<%- include("partials/footer"); %>

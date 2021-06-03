@@ -1,0 +1,24 @@
+<%- include("partials/header"); %> 
+
+
+
+<form action="/register" method="post" id="register">
+
+    <h1 class="registerHeader">Register</h1>
+
+    <label>Email:</label>
+    <input type="email" name="email" placeholder="Enter your email here"required><br>
+    <label>Password:</label>
+    <input type="password" name="password" placeholder="Enter your password here" minlength="8" required><br>
+    <button type="submit" class="btn btn-primary">Register</button>
+
+    <div class="loginAtRegister">
+        <label>Already have an account?</label>
+        <a href="/login">Login</a>
+    </div>
+
+</form>
+
+
+
+<%- include("partials/footer"); %> 
